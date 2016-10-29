@@ -1,0 +1,35 @@
+{
+  "name": "@ersinfotech/next",
+  "version": "0.0.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "clean": "rimraf lib dist",
+    "build": "babel src --out-dir lib",
+    "build:umd": "webpack src/index.js dist/index.js && NODE_ENV=production webpack src/index.js dist/index.min.js",
+    "test": "NODE_ENV=test ava",
+    "test:watch": "NODE_ENV=test ava --watch",
+    "test:cov": "nyc npm test",
+    "report": "nyc report --reporter=lcov",
+    "prepublish": "npm run test && npm run clean && npm run build && npm run build:umd"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "0.14.0",
+    "babel-cli": "6.8.0",
+    "babel-core": "6.8.0",
+    "babel-loader": "6.2.4",
+    "babel-register": "6.8.0",
+    "nyc": "6.4.4",
+    "rimraf": "2.3.4",
+    "webpack": "1.13.0"
+  },
+  "ava": {
+    "require": [
+      "babel-register"
+    ],
+    "babel": "inherit"
+  },
+  "dependencies": {
+    "bluebird": "3.4.6"
+  }
+}
