@@ -1,16 +1,20 @@
-import Next from '../src';
+const test = require('ava');
+const Next = require('../src');
 
-Next({
-  start: () => {
-    return [1,2,3];
-  },
-  data: (d) => {
-    console.log(d)
-    return d;
-  },
-  next: (d) => ({
+test(t => {
+  Next({
     start: () => {
-      console.log('next', d);
+      return [1,2,3];
     },
-  }),
+    data: (d) => {
+      console.log(d)
+      return d;
+    },
+    next: (d) => ({
+      start: () => {
+        console.log('next', d);
+      },
+    }),
+  });
+  t.true(true);
 });

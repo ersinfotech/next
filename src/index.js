@@ -1,19 +1,23 @@
-import Promise from 'bluebird';
+const _ = require('lodash');
 
-export default async function Next({
+const Next = async ({
   start,
   data,
   shouldNext,
   next,
   end,
-}) {
+}) => {
   if (!start) {
     return;
   }
 
-  const results = await start();
+  const results = _.castArray(await start());
 
-  _.each(_.castArray(results), (result) => {
+  for (const result of results) {
+    if (!data) {
+      return;
+    }
+
     const d = await data(result);
     if (shouldNext) {
       const shouldNextOrNot = await shouldNext(d);
@@ -21,12 +25,15 @@ export default async function Next({
         return;
       }
     }
+
     if (next) {
       await Next(next(d));
     }
-  })
+  }
 
   if (end) {
     await Next(end());
   }
 }
+
+module.exports = Next;
