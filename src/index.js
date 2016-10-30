@@ -6,12 +6,15 @@ const Next = async ({
   shouldNext,
   next,
   end,
-}) => {
+} = {}) => {
   if (!start) {
     return;
   }
 
-  const results = _.castArray(await start());
+  const results = _.chain(await start())
+    .castArray()
+    .compact()
+    .value();
 
   for (const result of results) {
     if (!data) {
