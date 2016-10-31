@@ -25,14 +25,14 @@ const Next = async ({
     for (const result of results) {
       try {
         if (!each) {
-          return;
+          break;
         }
         const d = await each(result);
 
         if (shouldEachNext) {
           const shouldEachNextOrNot = await shouldEachNext(d);
           if (!shouldEachNextOrNot) {
-            return;
+            continue;
           }
         }
         if (eachNext) {
