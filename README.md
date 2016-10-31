@@ -1,12 +1,34 @@
-next
+Next
 =========================
 
-An opinionated setup I plan to use for my libraries.
+```
+type Next = {
+  start: () => {
+    return [] || {};
+  },
 
-It has CommonJS and UMD builds via Babel and Webpack, ESLint, and Ava.  
+  each: (d) => {
+    return {};
+  },
+  shouldEachNext: (data) => {
+    return true || false;
+  }
+  eachNext: (data) => {
+    return Next;
+  },
+  eachCatch: (err) => {
+    // handle err in each phase
+  },
 
-Note that this is an *opinionated* boilerplate. You might want to:
+  shouldNext: () => {
+    return true || false;
+  }
+  next: () => {
+    return Next;
+  },
+  catch: (err) => {
+    // handle err entire phase
+  },
 
-* Remove `stage-0` preset in `.babelrc` so you don’t depend on language features that might be gone tomorrow;
-
-You have been warned.
+}
+```

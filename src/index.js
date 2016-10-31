@@ -1,42 +1,68 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const Next = async ({
   start,
-  data,
+
+  each,
+  shouldEachNext,
+  eachNext,
+  eachCatch,
+
   shouldNext,
   next,
-  end,
+  catch: _catch,
 } = {}) => {
-  if (!start) {
-    return;
-  }
-
-  const results = _.chain(await start())
-    .castArray()
-    .compact()
-    .value();
-
-  for (const result of results) {
-    if (!data) {
+  try {
+    if (!start) {
       return;
     }
 
-    const d = await data(result);
+    const results = _.chain(await start())
+      .castArray()
+      .compact()
+      .value();
+
+    for (const result of results) {
+      try {
+        if (!each) {
+          return;
+        }
+        const d = await each(result);
+
+        if (shouldEachNext) {
+          const shouldEachNextOrNot = await shouldEachNext(d);
+          if (!shouldEachNextOrNot) {
+            return;
+          }
+        }
+        if (eachNext) {
+          await Next(eachNext(d));
+        }
+      } catch (err) {
+        if (eachCatch) {
+          eachCatch(err);
+        } else {
+          throw err;
+        }
+      }
+    }
+
     if (shouldNext) {
-      const shouldNextOrNot = await shouldNext(d);
+      const shouldNextOrNot = await shouldNext();
       if (!shouldNextOrNot) {
         return;
       }
     }
-
     if (next) {
-      await Next(next(d));
+      await Next(next());
     }
-  }
-
-  if (end) {
-    await Next(end());
+  } catch (err) {
+    if (_catch) {
+      _catch(err);
+    } else {
+      throw err;
+    }
   }
 }
 
-module.exports = Next;
+export default Next;

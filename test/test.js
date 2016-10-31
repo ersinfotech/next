@@ -1,32 +1,45 @@
-const test = require('ava');
-const Next = require('../src');
+import test from 'ava';
+import Next from '../src';
 
-test(t => {
-  Next({
+test(async t => {
+  let steps = [];
+
+  await Next({
     start: () => {
-      const list = [1, 2, 3];
-      console.log('start', list);
+      const list = [1, 2];
+      steps.push(`start ${list}`);
       return list;
     },
-    data: (d) => {
-      console.log('data', d);
+    each: (d) => {
+      steps.push(`each ${d}`);
       return d;
     },
-    next: (d) => ({
+    eachNext: (d) => ({
       start: () => {
-        console.log('next start', d);
+        steps.push(`eachNext start ${d}`);
         return d;
       },
-      data: (d) => {
-        console.log('next data', d);
+      each: (d) => {
+        steps.push(`eachNext each ${d}`);
       },
-      end: () => {
-        console.log('next end');
+      next: () => {
+        steps.push(`eachNext next ${d}`);
       },
     }),
-    end: () => {
-      console.log('end');
+    next: () => {
+      steps.push('next');
     },
   });
-  t.true(true);
+  t.deepEqual(steps, [
+    'start 1,2',
+    'each 1',
+    'eachNext start 1',
+    'eachNext each 1',
+    'eachNext next 1',
+    'each 2',
+    'eachNext start 2',
+    'eachNext each 2',
+    'eachNext next 2',
+    'next',
+  ]);
 });
