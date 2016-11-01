@@ -4,7 +4,7 @@ const Next = async ({
   start,
 
   each,
-  shouldEachNext,
+  eachShouldNext,
   eachNext,
   eachCatch,
 
@@ -29,9 +29,9 @@ const Next = async ({
         }
         const d = await each(result);
 
-        if (shouldEachNext) {
-          const shouldEachNextOrNot = await shouldEachNext(d);
-          if (!shouldEachNextOrNot) {
+        if (eachShouldNext) {
+          const eachShouldNextOrNot = await eachShouldNext(d);
+          if (!eachShouldNextOrNot) {
             continue;
           }
         }

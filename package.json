@@ -1,6 +1,6 @@
 {
   "name": "@ersinfotech/next",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib dist",
@@ -8,7 +8,7 @@
     "test": "NODE_ENV=test ava",
     "test:watch": "NODE_ENV=test ava --watch",
     "test:cov": "nyc npm test",
-    "report": "nyc report --reporter=lcov",
+    "report": "npm run test:cov && nyc report --reporter=lcov",
     "prepublish": "npm run test && npm run clean && npm run build"
   },
   "license": "MIT",

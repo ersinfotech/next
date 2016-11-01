@@ -10,7 +10,7 @@ type Next = {
   each: (d) => {
     return {};
   },
-  shouldEachNext: (data) => {
+  eachShouldNext: (data) => {
     return true || false;
   }
   eachNext: (data) => {
