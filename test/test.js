@@ -5,42 +5,41 @@ test('normal flow', async t => {
   let steps = [];
 
   await Next({
-    start: () => {
+    for: () => {
       const list = [1, 2];
-      steps.push(`start ${list}`);
+      steps.push(`for ${list}`);
       return list;
     },
     each: (d) => {
       steps.push(`each ${d}`);
-      return d;
+      return {
+        for: () => {
+          steps.push(`each for ${d}`);
+          return d;
+        },
+        each: (d) => {
+          steps.push(`each each ${d}`);
+          return d;
+        },
+        next: () => {
+          steps.push(`each next ${d}`);
+        },
+      }
     },
-    eachNext: (d) => ({
-      start: () => {
-        steps.push(`eachNext start ${d}`);
-        return d;
-      },
-      each: (d) => {
-        steps.push(`eachNext each ${d}`);
-        return d;
-      },
-      next: () => {
-        steps.push(`eachNext next ${d}`);
-      },
-    }),
     next: () => {
       steps.push('next');
     },
   });
   t.deepEqual(steps, [
-    'start 1,2',
+    'for 1,2',
     'each 1',
-    'eachNext start 1',
-    'eachNext each 1',
-    'eachNext next 1',
+    'each for 1',
+    'each each 1',
+    'each next 1',
     'each 2',
-    'eachNext start 2',
-    'eachNext each 2',
-    'eachNext next 2',
+    'each for 2',
+    'each each 2',
+    'each next 2',
     'next',
   ]);
 });
@@ -49,33 +48,32 @@ test('shouldNext', async t => {
   let steps = [];
 
   await Next({
-    start: () => {
+    for: () => {
       const list = [1, 2];
-      steps.push(`start ${list}`);
+      steps.push(`for ${list}`);
       return list;
     },
     each: (d) => {
       steps.push(`each ${d}`);
-      return d;
+      return {
+        for: () => {
+          steps.push(`each for ${d}`);
+          return d;
+        },
+        each: (data) => {
+          steps.push(`each each ${data}`);
+          return d;
+        },
+        shouldNext: () => {
+          if (d === 1) {
+            return true;
+          }
+        },
+        next: () => {
+          steps.push(`each next ${d}`);
+        },
+      };
     },
-    eachShouldNext: (d) => {
-      if (d === 1) {
-        return true;
-      }
-    },
-    eachNext: (d) => ({
-      start: () => {
-        steps.push(`eachNext start ${d}`);
-        return d;
-      },
-      each: (d) => {
-        steps.push(`eachNext each ${d}`);
-        return d;
-      },
-      next: () => {
-        steps.push(`eachNext next ${d}`);
-      },
-    }),
     shouldNext: () => {
       return false;
     },
@@ -84,12 +82,14 @@ test('shouldNext', async t => {
     },
   });
   t.deepEqual(steps, [
-    'start 1,2',
+    'for 1,2',
     'each 1',
-    'eachNext start 1',
-    'eachNext each 1',
-    'eachNext next 1',
+    'each for 1',
+    'each each 1',
+    'each next 1',
     'each 2',
+    'each for 2',
+    'each each 2',
   ]);
 });
 
@@ -97,39 +97,35 @@ test('catch error', async t => {
   let steps = [];
 
   await Next({
-    start: () => {
+    for: () => {
       const list = [1, 2];
-      steps.push(`start ${list}`);
+      steps.push(`for ${list}`);
       return list;
     },
     each: (d) => {
       steps.push(`each ${d}`);
-      return d;
-    },
-    eachNext: (d) => ({
-      start: () => {
-        steps.push(`eachNext start ${d}`);
-        if (d === 2) {
-          throw new Error(d);
-        }
-        return d;
-      },
-      each: (d) => {
-        steps.push(`eachNext each ${d}`);
-        if (d == 1) {
-          throw new Error(d);
-        }
-        return d;
-      },
-      eachCatch: (err) => {
-        steps.push(`eachNext eachCatch`);
-      },
-      next: () => {
-        steps.push(`eachNext next ${d}`);
-      },
-    }),
-    shouldNext: () => {
-      return false;
+      if (d === 2) {
+        throw new Error(d);
+      }
+      return {
+        for: () => {
+          steps.push(`each for ${d}`);
+          return d;
+        },
+        each: (d) => {
+          steps.push(`each each ${d}`);
+          if (d == 1) {
+            throw new Error(d);
+          }
+          return d;
+        },
+        catch: (err) => {
+          steps.push(`each catch`);
+        },
+        next: () => {
+          steps.push(`each next ${d}`);
+        },
+      };
     },
     next: () => {
       steps.push('next');
@@ -139,14 +135,12 @@ test('catch error', async t => {
     },
   });
   t.deepEqual(steps, [
-    'start 1,2',
+    'for 1,2',
     'each 1',
-    'eachNext start 1',
-    'eachNext each 1',
-    'eachNext eachCatch',
-    'eachNext next 1',
+    'each for 1',
+    'each each 1',
+    'each catch',
     'each 2',
-    'eachNext start 2',
     'catch'
   ]);
 });
@@ -155,9 +149,9 @@ test('no each', async t => {
   let steps = [];
 
   await Next({
-    start: () => {
+    for: () => {
       const list = [1, 2];
-      steps.push(`start ${list}`);
+      steps.push(`for ${list}`);
       return list;
     },
     next: () => {
@@ -165,7 +159,7 @@ test('no each', async t => {
     },
   });
   t.deepEqual(steps, [
-    'start 1,2',
+    'for 1,2',
     'next',
   ]);
 });

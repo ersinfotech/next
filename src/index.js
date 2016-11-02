@@ -1,50 +1,28 @@
 import _ from 'lodash';
 
 const Next = async ({
-  start,
-
+  for: _for,
   each,
-  eachShouldNext,
-  eachNext,
-  eachCatch,
-
   shouldNext,
   next,
   catch: _catch,
 } = {}) => {
   try {
-    if (!start) {
+    if (!_for) {
       return;
     }
 
-    const results = _.chain(await start())
+    const results = _.chain(await _for())
       .castArray()
       .compact()
       .value();
 
     for (const result of results) {
-      try {
-        if (!each) {
-          break;
-        }
-        const d = await each(result);
-
-        if (eachShouldNext) {
-          const eachShouldNextOrNot = await eachShouldNext(d);
-          if (!eachShouldNextOrNot) {
-            continue;
-          }
-        }
-        if (eachNext) {
-          await Next(eachNext(d));
-        }
-      } catch (err) {
-        if (eachCatch) {
-          eachCatch(err);
-        } else {
-          throw err;
-        }
+      if (!each) {
+        break;
       }
+      const eachNext = await each(result);
+      await Next(eachNext);
     }
 
     if (shouldNext) {

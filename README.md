@@ -3,32 +3,24 @@ Next
 
 ```
 type Next = {
-  start: () => {
+  for: () => {
     return [] || {};
   },
 
   each: (d) => {
-    return {};
-  },
-  eachShouldNext: (data) => {
-    return true || false;
-  }
-  eachNext: (data) => {
     return Next;
-  },
-  eachCatch: (err) => {
-    // handle err in each phase
   },
 
   shouldNext: () => {
     return true || false;
   }
+  
   next: () => {
     return Next;
   },
-  catch: (err) => {
-    // handle err entire phase
-  },
 
+  catch: (err) => {
+    // handle err in entire phase
+  },
 }
 ```
