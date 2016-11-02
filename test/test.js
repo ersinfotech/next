@@ -114,10 +114,13 @@ test('catch error', async t => {
         },
         each: (d) => {
           steps.push(`each each ${d}`);
-          if (d == 1) {
-            throw new Error(d);
-          }
-          return d;
+          return {
+            next: () => {
+              if (d == 1) {
+                throw new Error(d);
+              }
+            },
+          };
         },
         catch: (err) => {
           steps.push(`each catch`);
@@ -142,24 +145,5 @@ test('catch error', async t => {
     'each catch',
     'each 2',
     'catch'
-  ]);
-});
-
-test('no each', async t => {
-  let steps = [];
-
-  await Next({
-    for: () => {
-      const list = [1, 2];
-      steps.push(`for ${list}`);
-      return list;
-    },
-    next: () => {
-      steps.push('next');
-    },
-  });
-  t.deepEqual(steps, [
-    'for 1,2',
-    'next',
   ]);
 });

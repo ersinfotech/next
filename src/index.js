@@ -8,21 +8,15 @@ const Next = async ({
   catch: _catch,
 } = {}) => {
   try {
-    if (!_for) {
-      return;
-    }
-
-    const results = _.chain(await _for())
-      .castArray()
-      .compact()
-      .value();
-
-    for (const result of results) {
-      if (!each) {
-        break;
+    if (_for && each) {
+      const results = _.chain(await _for())
+        .castArray()
+        .compact()
+        .value();
+      for (const result of results) {
+        const eachNext = await each(result);
+        await Next(eachNext);
       }
-      const eachNext = await each(result);
-      await Next(eachNext);
     }
 
     if (shouldNext) {
@@ -31,12 +25,13 @@ const Next = async ({
         return;
       }
     }
+
     if (next) {
       await Next(next());
     }
   } catch (err) {
     if (_catch) {
-      _catch(err);
+      await _catch(err);
     } else {
       throw err;
     }
