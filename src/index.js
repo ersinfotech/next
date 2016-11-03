@@ -27,7 +27,7 @@ const Next = async ({
     }
 
     if (next) {
-      await Next(next());
+      await Next(await next());
     }
   } catch (err) {
     if (_catch) {
