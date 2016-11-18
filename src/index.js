@@ -13,8 +13,8 @@ const Next = async ({
         .castArray()
         .compact()
         .value();
-      for (const result of results) {
-        const eachNext = await each(result);
+      for (const [index, result] of results.entries()) {
+        const eachNext = await each(result, index);
         await Next(eachNext);
       }
     }
