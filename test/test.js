@@ -143,7 +143,9 @@ test('catch error', async t => {
     'each for 1',
     'each each 1',
     'each catch',
+    'each next 1',
     'each 2',
-    'catch'
+    'catch',
+    'next',
   ]);
 });
