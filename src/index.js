@@ -14,8 +14,16 @@ const Next = async ({
         .compact()
         .value();
       for (const [index, result] of results.entries()) {
-        const eachNext = await each(result, index);
-        await Next(eachNext);
+        try {
+          const eachNext = await each(result, index);
+          await Next(eachNext);
+        } catch (err) {
+          if (_catch) {
+            await _catch(err);
+          } else {
+            throw err;
+          }
+        }
       }
     }
 
