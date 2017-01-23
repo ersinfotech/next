@@ -9,10 +9,7 @@ const Next = async ({
 } = {}) => {
   try {
     if (_for && each) {
-      const results = _.chain(await _for())
-        .castArray()
-        .compact()
-        .value();
+      const results = _.castArray(await _for());
       for (const [index, result] of results.entries()) {
         try {
           const eachNext = await each(result, index);
