@@ -16,7 +16,7 @@ const Next = async ({
           await Next(eachNext);
         } catch (err) {
           if (_catch) {
-            await _catch(err);
+            await Next(await _catch(err));
           } else {
             throw err;
           }
@@ -36,7 +36,7 @@ const Next = async ({
     }
   } catch (err) {
     if (_catch) {
-      await _catch(err);
+      await Next(await _catch(err));
     } else {
       throw err;
     }
